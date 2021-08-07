@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -29,12 +30,19 @@ public class UserController {
 	
 	@GetMapping("/users")
 	public String listFirstPage(Model model) {
-		return listByPage(1, model);
+		return listByPage(1, model, "firstName", "asc", null);
 	}
 	
 	@GetMapping("/users/page/{pageNumber}")
-	public String listByPage(@PathVariable(name = "pageNumber") int pageNumber, Model model) {
-		Page<User> page = userService.listByPage(pageNumber);
+	public String listByPage(
+			@PathVariable(name = "pageNumber") int pageNumber, Model model,
+			@Param("sortField") String sortField, @Param("sortDir") String sortDir,
+			@Param("keyword") String keyword) {
+		
+		System.out.println("Sort Field: " + sortField);
+		System.out.println("Sort Dir: " + sortDir);
+		
+		Page<User> page = userService.listByPage(pageNumber, sortField, sortDir, keyword);
 		List<User> listUsers = page.getContent();
 		
 		long startCount = (pageNumber - 1) * UserService.USER_PER_PAGE + 1;
@@ -42,6 +50,8 @@ public class UserController {
 		if (endCount > page.getTotalElements()) {
 			endCount = page.getTotalElements();
 		}
+		
+		String reverseSortDir = sortDir.equals("asc") ? "desc" : "asc";
 		
 //		System.out.println("start count: " + startCount);
 //		System.out.println("end count: " + endCount);
@@ -56,6 +66,11 @@ public class UserController {
 		model.addAttribute("endCount", endCount);
 		model.addAttribute("totalItems", page.getTotalElements());
 		model.addAttribute("listUsers", listUsers);
+		model.addAttribute("sortField", sortField);
+		model.addAttribute("sortDir", sortDir);
+		model.addAttribute("reverseSortDir", reverseSortDir);
+		model.addAttribute("keyword", keyword);
+		
 		return "users";
 		
 	}
