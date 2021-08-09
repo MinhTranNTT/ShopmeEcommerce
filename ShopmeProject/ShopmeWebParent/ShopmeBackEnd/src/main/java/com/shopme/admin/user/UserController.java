@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
@@ -108,7 +110,19 @@ public class UserController {
 		}
 		
 		redirectAttributes.addFlashAttribute("message", "The user has been save successfully.");
-		return "redirect:/users";
+		return getRedirectURLtoAffectedUser(user);
+	}
+	
+	private String getRedirectURLtoAffectedUser(User user) {
+		String firstPartOfEmail = user.getEmail().split("@")[0];
+		return "redirect:/users/page/1?sortField=id&sortDir=asc&keyword=" + firstPartOfEmail;
+	}
+	
+	@GetMapping("/users/export/csv")
+	public void exportToCSV(HttpServletResponse response) throws IOException {
+		List<User> listUsers = userService.listAll();
+		UserCsvExporter exporter = new UserCsvExporter();
+		exporter.export(listUsers, response);
 	}
 	
 	@GetMapping("/users/edit/{id}")
