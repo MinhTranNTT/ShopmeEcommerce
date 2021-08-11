@@ -125,6 +125,22 @@ public class UserController {
 		exporter.export(listUsers, response);
 	}
 	
+	@GetMapping("/users/export/excel")
+	public void exportToExcel(HttpServletResponse response) throws IOException {
+		List<User> listUsers = userService.listAll();
+		
+		UserExcelExporter exporter = new UserExcelExporter(); 
+		exporter.export(listUsers, response);
+	}
+	
+	@GetMapping("/users/export/pdf")
+	public void exportToPDF(HttpServletResponse response) throws IOException {
+		List<User> listUsers = userService.listAll();
+		
+		UserPDFExporter exporter = new UserPDFExporter(); 
+		exporter.export(listUsers, response);
+	}
+	
 	@GetMapping("/users/edit/{id}")
 	public String editUser(@PathVariable(name = "id") Integer id, Model model, RedirectAttributes redirectAttributes) {
 		try {
