@@ -43,13 +43,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
+			.antMatchers("/users/**").hasAuthority("Admin")
+			.antMatchers("/categories/**").hasAnyAuthority("Admin", "Editor")
+			.antMatchers("/brands/**").hasAnyAuthority("Admin", "Editor")
 			.anyRequest().authenticated()
 			.and()
 			.formLogin()
 				.loginPage("/login")
 				.usernameParameter("email")
 				.permitAll()
-				.and().logout().permitAll();
+				.and()
+					.logout().permitAll()
+				.and()
+					.rememberMe()
+						.key("AbCdEfGhIjKlMnOp_9876543211234")
+						.tokenValiditySeconds(7 * 24 * 60 * 60);
 	}
 	
 	@Override
