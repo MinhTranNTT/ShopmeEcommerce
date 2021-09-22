@@ -2,7 +2,6 @@ package com.shopme.admin.user.controller;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import javax.servlet.http.HttpServletResponse;
 
