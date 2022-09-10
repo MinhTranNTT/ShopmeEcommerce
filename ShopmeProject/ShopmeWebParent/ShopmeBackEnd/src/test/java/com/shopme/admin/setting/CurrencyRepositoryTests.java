@@ -28,6 +28,13 @@ public class CurrencyRepositoryTests {
 	}
 	
 	@Test
+	public void testListAllOrderByNameAsc() {
+		List<Currency> currencies = repo.findAllByOrderByNameAsc();
+		currencies.forEach(System.out::println);
+		assertThat(currencies.size()).isGreaterThan(0);
+	}
+	
+	@Test
 	public void testCreateCurrencies() {
 		List<Currency> listCurrencies = Arrays.asList(
 			new Currency("United States Dollar", "$", "USD"),
