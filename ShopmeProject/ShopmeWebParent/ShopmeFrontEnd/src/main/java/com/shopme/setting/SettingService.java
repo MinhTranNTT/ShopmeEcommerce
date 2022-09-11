@@ -14,6 +14,13 @@ public class SettingService {
 	@Autowired 
 	private SettingRepository repo;
 	
+	public EmailSettingBag getEmailSettings() {
+		List<Setting> settings = repo.findByCategory(SettingCategory.MAIL_SERVER);
+		settings.addAll(repo.findByCategory(SettingCategory.MAIL_TEMPLATES));
+		
+		return new EmailSettingBag(settings);
+	}
+	
 	public List<Setting> getGeneralSettings() {
 		return repo.findByTwoCategories(SettingCategory.GENERAL, SettingCategory.CURRENCY);
 	}
