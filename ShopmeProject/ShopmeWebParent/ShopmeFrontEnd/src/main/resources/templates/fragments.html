@@ -9,7 +9,6 @@
 	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
 	<script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
 	<script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
-	<script type="text/javascript" th:src="@{/js/common.js}"></script>
 </head>
 <body>
 	<div th:fragment="pagination(moduleURL, entityName)" th:remove="tag">
@@ -46,6 +45,27 @@
 		  </ul>
 		</nav>
 		</div>
+		
+		
+		<div th:fragment="modal_dialog" class="modal fade text-center" id="modalDialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title" id="modalTitle">Warning</h4>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
+					
+					<div class="modal-body">
+						<span id="modalBody"></span>
+					</div>
+					
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
 	</div>
 	
 	<a th:fragment="page_link(moduleURL, pageNum, lable)" 
