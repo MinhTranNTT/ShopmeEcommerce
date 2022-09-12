@@ -6,8 +6,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -19,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.shopme.admin.FileUploadUtil;
+import com.shopme.admin.paging.PagingAndSortingHelper;
+import com.shopme.admin.paging.PagingAndSortingParam;
 import com.shopme.admin.user.UserNotFoundException;
 import com.shopme.admin.user.UserService;
 import com.shopme.admin.user.export.UserCsvExporter;
@@ -30,52 +30,23 @@ import com.shopme.common.entity.User;
 
 @Controller
 public class UserController {
-
+	
+	private String defaultRedirectURL = "redirect:/users/page/1?sortField=firstName&sortDir=asc";
+	
 	@Autowired
 	private UserService userService;
 	
 	@GetMapping("/users")
 	public String listFirstPage(Model model) {
-		return listByPage(1, model, "firstName", "asc", null);
+		return defaultRedirectURL;
 	}
 	
 	@GetMapping("/users/page/{pageNumber}")
 	public String listByPage(
-			@PathVariable(name = "pageNumber") int pageNumber, Model model,
-			@Param("sortField") String sortField, @Param("sortDir") String sortDir,
-			@Param("keyword") String keyword) {
+			@PagingAndSortingParam(listName = "listUsers", moduleURL = "/users") PagingAndSortingHelper helper,
+			@PathVariable(name = "pageNum") int pageNum) {
 		
-		System.out.println("Sort Field: " + sortField);
-		System.out.println("Sort Dir: " + sortDir);
-		
-		Page<User> page = userService.listByPage(pageNumber, sortField, sortDir, keyword);
-		List<User> listUsers = page.getContent();
-		
-		long startCount = (pageNumber - 1) * UserService.USER_PER_PAGE + 1;
-		long endCount = startCount + UserService.USER_PER_PAGE - 1;
-		if (endCount > page.getTotalElements()) {
-			endCount = page.getTotalElements();
-		}
-		
-		String reverseSortDir = sortDir.equals("asc") ? "desc" : "asc";
-		
-//		System.out.println("start count: " + startCount);
-//		System.out.println("end count: " + endCount);
-//		System.out.println("gettotalElement: " + page.getTotalElements());
-//		System.out.println("Page Number: " + page.getNumber());
-//		System.out.println("Page Total Element: " + page.getTotalElements());
-//		System.out.println("Page total page: " + page.getTotalPages());
-		
-		model.addAttribute("currentPage", pageNumber);
-		model.addAttribute("totalPages", page.getTotalPages());
-		model.addAttribute("startCount", startCount);
-		model.addAttribute("endCount", endCount);
-		model.addAttribute("totalItems", page.getTotalElements());
-		model.addAttribute("listUsers", listUsers);
-		model.addAttribute("sortField", sortField);
-		model.addAttribute("sortDir", sortDir);
-		model.addAttribute("reverseSortDir", reverseSortDir);
-		model.addAttribute("keyword", keyword);
+		userService.listByPage(pageNum, helper);
 		
 		return "users/users";
 		
@@ -156,7 +127,7 @@ public class UserController {
 			return "users/user_form";
 		} catch (UserNotFoundException ex) {
 			redirectAttributes.addFlashAttribute("message", ex.getMessage());
-			return "redirect:/users";
+			return defaultRedirectURL;
 		}	
 	}
 	
@@ -168,7 +139,7 @@ public class UserController {
 		} catch (UserNotFoundException ex) {
 			redirectAttributes.addFlashAttribute("message", ex.getMessage());
 		}
-		return "redirect:/users";
+		return defaultRedirectURL;
 	}
 	
 	@GetMapping("/users/{id}/enabled/{status}")
@@ -178,6 +149,6 @@ public class UserController {
 		String status = enabled ? "enabled" : "disabled";
 		String message = "The User ID " + id + " has been " + status;
 		redirectAttributes.addFlashAttribute("message", message);
-		return "redirect:/users";
+		return defaultRedirectURL;
 	}
 }
