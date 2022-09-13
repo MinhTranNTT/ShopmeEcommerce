@@ -17,25 +17,21 @@ public class CustomerUserDetails implements UserDetails {
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getPassword() {
-		// TODO Auto-generated method stub
 		return customer.getPassword();
 	}
 
 	@Override
 	public String getUsername() {
-		// TODO Auto-generated method stub
 		return customer.getEmail();
 	}
 
 	@Override
 	public boolean isAccountNonExpired() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
@@ -53,12 +49,15 @@ public class CustomerUserDetails implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		// TODO Auto-generated method stub
 		return customer.isEnabled();
 	}
 
 	public String getFullName() {
 		return customer.getFirstName() + " " + customer.getLastName();
+	}
+	
+	public Customer getCustomer() {
+		return this.customer;
 	}
 	
 }
